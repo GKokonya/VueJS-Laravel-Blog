@@ -1,30 +1,16 @@
+<script setup>
+import { Head, Link } from '@inertiajs/inertia-vue3';
+import Pagination from '../Pages/Shared/Pagintion.vue';
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tailwind Blog Template</title>
-    <meta name="author" content="David Grzyb">
-    <meta name="description" content="">
-
-    <!-- Tailwind -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
-
-        .font-family-karla {
-            font-family: karla;
-        }
-    </style>
-
-    <!-- AlpineJS -->
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-    <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
-</head>
-<body class="bg-white font-family-karla">
-
+defineProps({
+    canLogin: Boolean,
+    canRegister: Boolean,
+    posts: Array,
+    categories: Array
+});
+</script>
+<template>
+    
     <!-- Top Bar Nav -->
     <nav class="w-full py-4 bg-blue-800 shadow">
         <div class="w-full container mx-auto flex flex-wrap items-center justify-between">
@@ -37,29 +23,26 @@
             </nav>
 
             <div class="flex items-center text-lg no-underline text-white pr-6">
-                @if (Route::has('login'))
-                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                    @auth
-                        <a href="{{ url('/home') }}" class="text-sm">Home</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm">Log in</a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-sm">Register</a>
-                        @endif
-                    @endauth
+                <div v-if="canLogin" class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
+                    <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="text-sm">Dashboard</Link>
+
+                    <template v-else>
+                        <Link :href="route('login')" class="text-sm">Log in</Link>
+                        <Link v-if="canRegister" :href="route('register')" class="text-sm">Register</Link>
+                    </template>
                 </div>
-            @endif
             </div>
         </div>
-
     </nav>
+
+    
 
     <!-- Text Header -->
     <header class="w-full container mx-auto">
         <div class="flex flex-col items-center py-12">
             <a class="font-bold text-gray-800 uppercase hover:text-gray-700 text-5xl" href="#">
-                Minimal Blog
+                VUE JS LARAVEL BLOG
             </a>
 
         </div>
@@ -78,7 +61,7 @@
         </div>
         <div :class="open ? 'block': 'hidden'" class="w-full flex-grow sm:flex sm:items-center sm:w-auto">
             <div class="w-full container mx-auto flex flex-col sm:flex-row items-center justify-center text-sm font-bold uppercase mt-0 px-6 py-2">
-                <a href="#" class="hover:bg-gray-400 rounded py-2 px-4 mx-2">Technology</a>
+                <a href="#" class="hover:bg-gray-400 rounded py-2 px-4 mx-2" v-for="category in categories.data" :key="category.id">{{ category.title}}</a>
             </div>
         </div>
     </nav>
@@ -89,28 +72,24 @@
         <!-- Posts Section -->
         <section class="w-full md:w-2/3 flex flex-col items-center px-3">
 
-            <article class="flex flex-col shadow my-4">
+            <article class="flex flex-col shadow my-4" v-for="post in posts.data" :key="post.id">
                 <!-- Article Image -->
                 <a href="#" class="hover:opacity-75">
                     <img src="https://source.unsplash.com/collection/1346951/1000x500?sig=1">
                 </a>
                 <div class="bg-white flex flex-col justify-start p-6">
-                    <a href="#" class="text-blue-700 text-sm font-bold uppercase pb-4">Technology</a>
-                    <a href="#" class="text-3xl font-bold hover:text-gray-700 pb-4">Lorem Ipsum Dolor Sit Amet Dolor Sit Amet</a>
+                    <a href="#" class="text-blue-700 text-sm font-bold uppercase pb-4">{{ post.category_id }}</a>
+                    <a href="#" class="text-3xl font-bold hover:text-gray-700 pb-4">{{ post.title }}</a>
                     <p href="#" class="text-sm pb-3">
-                        By <a href="#" class="font-semibold hover:text-gray-800">David Grzyb</a>, Published on April 25th, 2020
+                        By <a href="#" class="font-semibold hover:text-gray-800">David Grzyb</a>, Published on {{ post.created_at }}
                     </p>
                     <a href="#" class="pb-6">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis porta dui. Ut eu iaculis massa. Sed ornare ligula lacus, quis iaculis dui porta volutpat. In sit amet posuere magna..</a>
                     <a href="#" class="uppercase text-gray-800 hover:text-black">Continue Reading <i class="fas fa-arrow-right"></i></a>
                 </div>
             </article>
 
-            <!-- Pagination -->
-            <div class="flex items-center py-8">
-                <a href="#" class="h-10 w-10 bg-blue-800 hover:bg-blue-600 font-semibold text-white text-sm flex items-center justify-center">1</a>
-                <a href="#" class="h-10 w-10 font-semibold text-gray-800 hover:bg-blue-600 hover:text-white text-sm flex items-center justify-center">2</a>
-                <a href="#" class="h-10 w-10 font-semibold text-gray-800 hover:text-gray-900 text-sm flex items-center justify-center ml-3">Next <i class="fas fa-arrow-right ml-2"></i></a>
-            </div>
+            <!--pagination-->
+            <Pagination :links="posts.links" :first_page="posts.first_page_url" class="mt-2"/>
 
         </section>
 
@@ -124,7 +103,7 @@
                     Get to know us
                 </a>
             </div>
-
+        <!--
             <div class="w-full bg-white shadow flex flex-col my-4 p-6">
                 <p class="text-xl font-semibold pb-5">Instagram</p>
                 <div class="grid grid-cols-3 gap-3">
@@ -142,7 +121,7 @@
                     <i class="fab fa-instagram mr-2"></i> Follow @dgrzyb
                 </a>
             </div>
-
+        -->
         </aside>
 
     </div>
@@ -158,5 +137,4 @@
             <div class="uppercase pb-6">&copy; myblog.com</div>
         </div>
     </footer>
-</body>
-</html>
+</template>

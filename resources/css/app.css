@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.active{
+    @apply absolute inset-y-0 left-0 w-1 bg-indigo-600 rounded-tr-lg rounded-br-lg;
+}
+
+.input-text{
+    @apply w-full rounded-lg border border-gray-200 p-4 pr-12 text-sm shadow-sm focus:outline-none focus:ring focus:ring-indigo-600;
+}
+
+.btn{
+    @apply cursor-pointer rounded  bg-indigo-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-indigo-700;
+}
+
+.success-badge{
+    @apply rounded bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700;
+}
+
+.danger-badge{
+    @apply rounded bg-red-100 px-3 py-1.5 text-xs font-medium text-red-700;
+}
+
+.warning-badge{
+    @apply rounded bg-yellow-100 px-3 py-1.5 text-xs font-medium text-red-700;
+}
+
+.secondary-badge{
+    @apply rounded bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700;
+}
+
+.info-badge{
+    @apply rounded bg-blue-100 px-3 py-1.5 text-xs font-medium text-blue-700;
+}
+
+.btn-submit{
+    @apply block w-full rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white hover:bg-indigo-700;
+}

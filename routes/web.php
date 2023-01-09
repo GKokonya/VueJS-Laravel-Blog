@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CategoryController;
 use Inertia\Inertia;
 
 /*
@@ -16,18 +19,21 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/welcome', function () {
-    return Inertia::render('Welcome', [
+Route::get('/', function () {
+    return Inertia::render('Index', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'posts'=>$posts = \App\Models\Post::select('posts.id as id', 'posts.title as title', 'categories.title as category', 'posts.created_at as created_at')->join('categories', 'categories.id', '=', 'posts.category_id')->paginate(2),
+        'categories' => \App\Models\Category::select('id','title')->get(),
     ]);
 });
+
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -35,7 +41,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/',function(){
-return view('index');
-});
+
 require __DIR__.'/auth.php';
+
+//Route::resource('/posts',PostController::class);
+Route::get('/posts' ,[PostController::class,'index'])->name('posts.index');
+Route::get('/posts/create' ,[PostController::class,'create']);
+Route::post('/posts' ,[PostController::class,'store']);
